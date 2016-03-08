@@ -199,29 +199,7 @@ q, blockquote {
 	display: flex;
 	min-height: 60px;
 	box-sizing: border-box;
-
-	/* colors from https://www.google.com/design/spec/style/color.html#color-color-palette */
-	/*background: #ba68c8;*/ /*purple*/
-	/*background: #f44336;*/ /*red*/
-	/*background: #3f51b5;*/ /*indigo*/
-	/*background: #a1887f;*/ /*brown*/
-	/*background: #00bcd4;*/ /*cyan*/
-	/*background: #009688;*/ /*teal*/
-	/*background: #c0ca33;*/ /*lime*/
-	/*background: #8bc34a;*/ /*lightgreen*/
-	/*background: #2196f3;*/ /*blue*/
-	/*background: #f9a825;*/ /*yellow*/
-	/*background: #ffa000;*/ /*amber*/
-	/*background: #ff9800;*/ /*orange*/
-	/*background: #9e9e9e;*/ /*gray*/
-	/*background: #607d8b;*/ /*bluegray*/
-	/*background: #ff5722;*/ /*deeporange*/
-	/*background: #000000;*/ /*black*/
-	/*background: #424242;*/ /*dark gray*/
-	/*background: #795548;*/ /*darker brown*/
-	/*background: #4caf50;*/ /*green*/
-	/*background: #0F9D58;*/ /*darkgreen*/
-	background: #f44336; /*red*/
+	background: #263238;
 	padding: 0 0 0 20px;
 	color: inherit;
 }
@@ -500,7 +478,7 @@ q, blockquote {
 /* Floating action button (FAB)
 ------------------------------------------------------------------ */
 
-.floating-action {
+#fab {
 	display: inline-block;
 	height: 56px;
 	width: 56px;
@@ -520,7 +498,7 @@ q, blockquote {
 	border: 0;
 }
 
-.floating-action::before {
+#fab::before {
 	content: "\e903";
 	position: absolute;
 	top: 0; left: 0; bottom: 0; right: 0;
@@ -531,17 +509,17 @@ q, blockquote {
 	background: #db4437;
 }
 
-.floating-action:focus {
+#fab:focus {
 	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15), 0 8px 17px 0 rgba(0, 0, 0, 0.4);
 	outline: none;
 }
 
-.floating-action.hidden {
+#fab.hidden {
 	transform: scale(0);
 	transition: transform .2s cubic-bezier(.2,-.5,.5,.2);
 }
 
-.floating-action#add-feed::before {
+#fab.add-feed::before {
 	content: "\e927";
 }
 /* PAGE INDEX 
@@ -709,7 +687,7 @@ fieldset {
 #billets > li,
 #auth, #install,
 #form-image, #image-section, #files-section,
-#preferences,
+#preferences > div,
 #preferences-captcha,
 #maintenance-form,
 #post-nv-commentaire,
