@@ -11,28 +11,28 @@
 #
 # *** LICENSE ***
 
-if ( !file_exists('../config/user.php') || !file_exists('../config/prefs.php') ) {
+if ( !file_exists('../config/user.ini') || !file_exists('../config/prefs.php') ) {
 	header('Location: install.php');
 	exit;
 }
 
 $begin = microtime(TRUE);
-$GLOBALS['BT_ROOT_PATH'] = '../';
+define('BT_ROOT', '../');
+
 require_once '../inc/inc.php';
-error_reporting($GLOBALS['show_errors']);
 
 operate_session();
 
 // open bases
-$GLOBALS['db_handle'] = open_base($GLOBALS['db_location']);
-$GLOBALS['liste_fichiers'] = open_serialzd_file($GLOBALS['fichier_liste_fichiers']);
+$GLOBALS['db_handle'] = open_base();
+$GLOBALS['liste_fichiers'] = open_serialzd_file(FILES_DB);
 
 // migration 2.1.0.0 => 2.1.0.1 FIXME : remove later
 if (!isset($GLOBALS['liste_fichiers'][0]['bt_path'])) {
 	foreach ($GLOBALS['liste_fichiers'] as $i => $file) {
 		$GLOBALS['liste_fichiers'][$i]['bt_path'] = '';
 	}
-	file_put_contents($GLOBALS['fichier_liste_fichiers'], '<?php /* '.chunk_split(base64_encode(serialize($GLOBALS['liste_fichiers']))).' */');
+	file_put_contents(FILES_DB, '<?php /* '.chunk_split(base64_encode(serialize($GLOBALS['liste_fichiers']))).' */');
 }
 
 afficher_html_head($GLOBALS['lang']['label_resume']);

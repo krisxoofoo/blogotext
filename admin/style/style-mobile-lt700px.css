@@ -1,14 +1,40 @@
 @media (max-width: 700px) {
 	#axe {
-		padding: 20px 0;
+		padding: 20px 10px;
 	}
-	#page {
-		padding: 0 0 20px;
+
+	#subnav form select {
+		max-width: 35px;
+		padding-right: 30px;
+		margin-right: 0;
+		position: relative;
+		background: transparent;
+		box-shadow: none;
 	}
+
+	#subnav form {
+		flex: 0 0 50px;
+	}
+
+	#subnav #form-filtre {
+		display: inline-block;
+		background: #fafafa;
+		margin-right: 5px;
+		box-shadow: 0px 0px 2px rgba(0, 0, 0, .2);
+	}
+
+	#subnav #form-filtre::before {
+		content: "\e93f";
+		position: relative;
+		font-size: 2em;
+		display: inline-block;
+		width: 0;
+		left: 5px;
+	}
+
 
 	/* page billets */
 	#billets {
-		width: 98%;
 	}
 
 	/* page écrire */
@@ -40,6 +66,18 @@
 	}
 	.commentbloc .comm-header {
 		display: block;
+	}
+	.commentbloc .comm-side-icon {
+		flex: 0 0 75px;
+	}
+	.commentbloc .comm-side-icon .date {
+		font-size: .6em;
+	}
+	.commentbloc:not(:last-of-type) .comm-side-icon::after {
+		left: 35px;
+	}
+	.commentbloc.foreground .comm-side-icon {
+		display: none;
 	}
 	.commentbloc .comm-content blockquote {
 		padding: 5px;

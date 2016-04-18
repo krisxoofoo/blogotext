@@ -387,7 +387,7 @@ function afficher_form_link($step, $erreurs, $editlink='') {
 
 		$form .= "\t".'<div id="tag_bloc">'."\n";
 		$form .= form_categories_links('links', '');
-		$form .= "\t".'<input list="htmlListTags" autocomplete="off" type="text" class="text" id="type_tags" name="tags" onkeydown="chkHit(event);" placeholder="'.ucfirst($GLOBALS['lang']['placeholder_tags']).'"/>'."\n";
+		$form .= "\t".'<input list="htmlListTags" type="text" class="text" id="type_tags" name="tags" onkeydown="chkHit(event);" placeholder="'.ucfirst($GLOBALS['lang']['placeholder_tags']).'"/>'."\n";
 		$form .= "\t".'<input type="hidden" id="categories" name="categories" value="" />'."\n";
 		$form .= "\t".'</div>'."\n";
 
@@ -418,7 +418,7 @@ function afficher_form_link($step, $erreurs, $editlink='') {
 		$form .= "\t".'</div>'."\n";
 		$form .= "\t".'<div id="tag_bloc">'."\n";
 		$form .= form_categories_links('links', $editlink['bt_tags']);
-		$form .= "\t\t".'<input list="htmlListTags" autocomplete="off" type="text" class="text" id="type_tags" name="tags" onkeydown="chkHit(event);" placeholder="'.ucfirst($GLOBALS['lang']['placeholder_tags']).'"/>'."\n";
+		$form .= "\t\t".'<input list="htmlListTags" type="text" class="text" id="type_tags" name="tags" onkeydown="chkHit(event);" placeholder="'.ucfirst($GLOBALS['lang']['placeholder_tags']).'"/>'."\n";
 		$form .= "\t\t".'<input type="hidden" id="categories" name="categories" value="" />'."\n";
 		$form .= "\t".'</div>'."\n";
 		$form .= "\t".'<label class="forcheckbox">'.$GLOBALS['lang']['label_lien_priv'].'<input type="checkbox" name="statut" '.(($editlink['bt_statut'] == 0) ? 'checked ' : '').'/>'.'</label>'."\n";
@@ -444,7 +444,7 @@ function afficher_form_link($step, $erreurs, $editlink='') {
 function afficher_form_billet($article, $erreurs) {
 	function form_annee($year_shown) {
 
-		$yearBegin = min (substr($GLOBALS['date_premier_message_blog'], 0, 4), date('Y') -3);
+		$yearBegin = min (substr(DATE_PREMIER_MESSAGE_BLOG, 0, 4), date('Y') -3);
 		for ($year = $yearBegin, $year_max = date('Y') +3; $year <= $year_max; $year++) $years[$year] = $year;
 		$ret = '<select name="annee">'."\n" ;
 			foreach ($years as $option => $label) {
@@ -542,7 +542,7 @@ function afficher_form_billet($article, $erreurs) {
 	if ($GLOBALS['activer_categories'] == '1') {
 		echo "\t".'<div id="tag_bloc">'."\n";
 		echo form_categories_links('articles', $categoriesdefaut);
-		echo "\t\t".'<input list="htmlListTags" autocomplete="off" type="text" class="text" id="type_tags" name="tags" onkeydown="chkHit(event);" placeholder="'.ucfirst($GLOBALS['lang']['placeholder_tags']).'" tabindex="65"/>'."\n";
+		echo "\t\t".'<input list="htmlListTags" type="text" class="text" id="type_tags" name="tags" onkeydown="chkHit(event);" placeholder="'.ucfirst($GLOBALS['lang']['placeholder_tags']).'" tabindex="65"/>'."\n";
 		echo "\t\t".'<input type="hidden" id="categories" name="categories" value="" />'."\n";
 		echo "\t".'</div>'."\n";
 	}
@@ -759,7 +759,7 @@ function afficher_form_prefs($erreurs = '') {
 		$fld_user .= '<div class="form-lines">'."\n";
 		$fld_user .= '<p>'."\n";
 		$fld_user .= "\t".'<label for="auteur">'.$GLOBALS['lang']['pref_auteur'].'</label>'."\n";
-		$fld_user .= "\t".'<input type="text" id="auteur" name="auteur" size="30" value="'.(empty($GLOBALS['auteur']) ? $GLOBALS['identifiant'] : $GLOBALS['auteur']).'" class="text" />'."\n";
+		$fld_user .= "\t".'<input type="text" id="auteur" name="auteur" size="30" value="'.(empty($GLOBALS['auteur']) ? htmlspecialchars(USER_LOGIN) : $GLOBALS['auteur']).'" class="text" />'."\n";
 		$fld_user .= '</p>'."\n";
 
 		$fld_user .= '<p>'."\n";
@@ -799,7 +799,7 @@ function afficher_form_prefs($erreurs = '') {
 		$fld_securite .= '<div class="form-lines">'."\n";
 		$fld_securite .= '<p>'."\n";
 		$fld_securite .= "\t".'<label for="identifiant">'.$GLOBALS['lang']['pref_identifiant'].'</label>'."\n";
-		$fld_securite .= "\t".'<input type="text" id="identifiant" name="identifiant" size="30" value="'.$GLOBALS['identifiant'].'" class="text" />'."\n";
+		$fld_securite .= "\t".'<input type="text" id="identifiant" name="identifiant" size="30" value="'.htmlspecialchars(USER_LOGIN).'" class="text" />'."\n";
 		$fld_securite .= '</p>'."\n";
 
 		$fld_securite .= '<p>'."\n";
@@ -831,7 +831,7 @@ function afficher_form_prefs($erreurs = '') {
 
 		$fld_apparence .= '<div class="form-lines">'."\n";
 		$fld_apparence .= '<p>'."\n";
-		$fld_apparence .= form_select('theme', liste_themes($GLOBALS['BT_ROOT_PATH'].$GLOBALS['dossier_themes']), $GLOBALS['theme_choisi'],$GLOBALS['lang']['pref_theme']);
+		$fld_apparence .= form_select('theme', liste_themes(BT_ROOT.DIR_THEMES), $GLOBALS['theme_choisi'],$GLOBALS['lang']['pref_theme']);
 		$fld_apparence .= '</p>'."\n";
 
 		$fld_apparence .= '<p>'."\n";
@@ -963,8 +963,8 @@ function afficher_form_prefs($erreurs = '') {
 
 			$fld_cfg_rss .= '<p>'."\n";
 			$a = explode('/', dirname($_SERVER['SCRIPT_NAME']));
-			$fld_cfg_rss .= '<label>'.$GLOBALS['lang']['pref_label_bookmark_lien'].'</label>'."\n";
-			$fld_cfg_rss .= '<a onclick="prompt(\''.$GLOBALS['lang']['pref_alert_crontab_rss'].'\', \'0 *  *   *   *   wget --spider -qO- '.$GLOBALS['racine'].$a[count($a)-1].'/_rss.ajax.php?guid='.$GLOBALS['install_uid'].'&refresh_all'.'\');return false;" href="#">Afficher ligne Cron</a>';
+			$fld_cfg_rss .= '<label>'.$GLOBALS['lang']['pref_label_crontab_rss'].'</label>'."\n";
+			$fld_cfg_rss .= '<a onclick="prompt(\''.$GLOBALS['lang']['pref_alert_crontab_rss'].'\', \'0 *  *   *   *   wget --spider -qO- '.$GLOBALS['racine'].$a[count($a)-1].'/_rss.ajax.php?guid='.BLOG_UID.'&refresh_all'.'\');return false;" href="#">Afficher ligne Cron</a>';
 			$fld_cfg_rss .= '</p>'."\n";
 
 			$fld_cfg_rss .= '<p>'."\n";
@@ -1006,18 +1006,22 @@ function afficher_form_prefs($erreurs = '') {
 	// check if a new Blogotext version is available (code from Shaarli, by Sebsauvage).
 	// Get latest version number at most once a day.
 	if ($GLOBALS['check_update'] == 1) {
-		if ( !is_file($GLOBALS['last-online-file']) or (filemtime($GLOBALS['last-online-file']) < time()-(24*60*60)) ) {
+		$version_file = '../config/version.txt';
+		if ( !is_file($version_file) or (filemtime($version_file) < time()-(24*60*60)) ) {
 			$version_hit_url = 'http://lehollandaisvolant.net/blogotext/version.php';
 			$response = request_external_files(array($version_hit_url), 6, false);
 			$last_version = $response[$version_hit_url]['body'];
 			// If failed, nevermind. We don't want to bother the user with that.
-			if (empty($last_version)) { $last_version = $GLOBALS['version']; }
-			file_put_contents($GLOBALS['last-online-file'], $last_version); // touch file date
+			if (empty($last_version)) {
+				file_put_contents($version_file, BLOGOTEXT_VERSION); // touch
+			} else {
+				file_put_contents($version_file, $last_version); // rewrite file
+			}
 		}
 
 		// Compare versions:
-		$newestversion = file_get_contents($GLOBALS['last-online-file']);
-		if (version_compare($newestversion, $GLOBALS['version']) == 1) {
+		$newestversion = file_get_contents($version_file);
+		if (version_compare($newestversion, BLOGOTEXT_VERSION) == 1) {
 				$fld_update = '<div role="group" class="pref">';
 				$fld_update .= '<div class="form-legend">'.legend($GLOBALS['lang']['maint_chk_update'], 'legend-update').'</div>'."\n";
 				$fld_update .= '<div class="form-lines">'."\n";

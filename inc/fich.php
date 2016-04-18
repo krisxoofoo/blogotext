@@ -31,18 +31,20 @@ function creer_dossier($dossier, $make_htaccess='') {
 
 
 function fichier_user() {
-	$fichier_user = '../'.$GLOBALS['dossier_config'].'/user.php';
-	$user='';
+	$fichier_user = '../'.DIR_CONFIG.'/user.ini';
+	$content = '';
 	if (strlen(trim($_POST['mdp'])) == 0) {
-		$new_mdp = $GLOBALS['mdp_hash']; 
+		$new_mdp = USER_PWHASH; 
 	} else {
 		$new_mdp = password_hash($_POST['mdp'], PASSWORD_BCRYPT);
 	}
-	$user .= "<?php\n";
-	$user .= "\$GLOBALS['identifiant'] = '".addslashes(clean_txt(htmlspecialchars($_POST['identifiant'])))."';\n";
-	$user .= "\$GLOBALS['mdp_hash'] = '".$new_mdp."';\n";
-	$user .= "?>";
-	if (file_put_contents($fichier_user, $user) === FALSE) {
+	$content .= '; <?php die(); /*'."\n\n";
+	$content .= '; This file contains user login + password hash.'."\n\n";
+
+	$content .= 'USER_LOGIN = \''.addslashes(clean_txt(htmlspecialchars($_POST['identifiant']))).'\''."\n";
+	$content .= 'USER_PWHASH = \''.$new_mdp.'\''."\n";
+
+	if (file_put_contents($fichier_user, $content) === FALSE) {
 		return FALSE;
 	} else {
 		return TRUE;
@@ -50,7 +52,7 @@ function fichier_user() {
 }
 
 function fichier_adv_conf() {
-	$fichier_advconf = '../'.$GLOBALS['dossier_config'].'/config-advanced.ini';
+	$fichier_advconf = '../'.DIR_CONFIG.'/config-advanced.ini';
 	$conf='';
 	$conf .= '; <?php die(); /*'."\n\n";
 	$conf .= '; This file contains some more advanced configuration features.'."\n\n";
@@ -58,15 +60,15 @@ function fichier_adv_conf() {
 	try {
 		$result = $GLOBALS['db_handle']->query("SELECT MIN(bt_date) FROM articles")->fetch();
 		$date = decode_id($result[0]);
-		$conf .= 'date_premier_message_blog = \''.$date['annee'].$date['mois'].'\''."\n";
+		$conf .= 'DATE_PREMIER_MESSAGE_BLOG = \''.$date['annee'].$date['mois'].'\''."\n";
 	} catch (Exception $e) {
 		die('Erreur MIN in Fichier_adv_conf() gen.: '.$e->getMessage());
 	}
 
-	$conf .= 'install_uid = \''.sha1(uniqid(mt_rand(), true)).'\''."\n";
-	$conf .= 'show_errors = -1;'."\n";
-	$conf .= 'gravatar_link = \'themes/default/gravatars/get.php?g=\''."\n";
-	$conf .= 'use_ip_in_session = 0;'."\n\n\n";
+	$conf .= 'BLOG_UID = \''.sha1(uniqid(mt_rand(), true)).'\''."\n";
+	$conf .= 'DISPLAY_PHP_ERRORS = -1;'."\n";
+	$conf .= 'GRAVATAR_LINK = \'themes/default/gravatars/get.php?g=\''."\n";
+	$conf .= 'USE_IP_IN_SESSION = 0;'."\n\n\n";
 	$conf .= '; */ ?>'."\n";
 
 	if (file_put_contents($fichier_advconf, $conf) === FALSE) {
@@ -78,7 +80,7 @@ function fichier_adv_conf() {
 
 
 function fichier_prefs() {
-	$fichier_prefs = '../'.$GLOBALS['dossier_config'].'/prefs.php';
+	$fichier_prefs = '../'.DIR_CONFIG.'/prefs.php';
 	if(!empty($_POST['_verif_envoi'])) {
 		$lang = (isset($_POST['langue']) and preg_match('#^[a-z]{2}$#', $_POST['langue'])) ? $_POST['langue'] : 'fr';
 		$auteur = clean_txt(htmlspecialchars($_POST['auteur']));
@@ -110,7 +112,7 @@ function fichier_prefs() {
 		$nombre_liens_admin = htmlspecialchars($_POST['nb_list_linx']);
 	} else {
 		$lang = (isset($_POST['langue']) and preg_match('#^[a-z]{2}$#', $_POST['langue'])) ? $_POST['langue'] : 'fr';
-		$auteur = clean_txt($GLOBALS['identifiant']);
+		$auteur = clean_txt(htmlspecialchars(USER_LOGIN));
 		$email = 'mail@example.com';
 		$nomsite = 'Blogotext';
 		$description = clean_txt($GLOBALS['lang']['go_to_pref']);
@@ -179,16 +181,17 @@ function fichier_prefs() {
 }
 
 function fichier_mysql($sgdb) {
-	$fichier_mysql = '../config/mysql.php';
+	$fichier_mysql = '../'.DIR_CONFIG.'/mysql.ini';
+
 	$data = '';
 	if ($sgdb !== FALSE) {
-		$data .= "<?php\n";
-		$data .= "\$GLOBALS['mysql_login'] = '".htmlentities($_POST['mysql_user'], ENT_QUOTES)."';\n";	
-		$data .= "\$GLOBALS['mysql_passwd'] = '".htmlentities($_POST['mysql_passwd'], ENT_QUOTES)."';\n";
-		$data .= "\$GLOBALS['mysql_db'] = '".htmlentities($_POST['mysql_db'], ENT_QUOTES)."';\n";
-		$data .= "\$GLOBALS['mysql_host'] = '".htmlentities($_POST['mysql_host'], ENT_QUOTES)."';\n";
-		$data .= "\n";
-		$data .= "\$GLOBALS['sgdb'] = '".$sgdb."';\n";
+		$data .= '; <?php die(); /*'."\n\n";
+		$data .= '; This file contains MySQL credentials and configuration.'."\n\n";
+		$data .= 'MYSQL_LOGIN = \''.htmlentities($_POST['mysql_user'], ENT_QUOTES).'\''."\n";
+		$data .= 'MYSQL_PASS = \''.htmlentities($_POST['mysql_passwd'], ENT_QUOTES).'\''."\n";
+		$data .= 'MYSQL_DB = \''.htmlentities($_POST['mysql_db'], ENT_QUOTES).'\''."\n";
+		$data .= 'MYSQL_HOST = \''.htmlentities($_POST['mysql_host'], ENT_QUOTES).'\''."\n\n";
+		$data .= 'DBMS = \''.$sgdb.'\''."\n";
 	}
 
 	if (file_put_contents($fichier_mysql, $data) === FALSE) {
@@ -216,7 +219,6 @@ function fichier_index($dossier) {
 	}
 }
 
-
 function fichier_htaccess($dossier) {
 	$content = '<Files *>'."\n";
 	$content .= 'Order allow,deny'."\n";
@@ -229,59 +231,6 @@ function fichier_htaccess($dossier) {
 	} else {
 		return TRUE;
 	}
-}
-
-
-// dans le panel, l'IP de dernière connexion est affichée. Il est stoqué avec cette fonction.
-function fichier_ip() {
-	$new_ip = htmlspecialchars($_SERVER['REMOTE_ADDR']);
-	$new_time = date('YmdHis');
-	$content = "<?php\n";
-	$content .= "\$GLOBALS['old_ip'] = '".$new_ip."';\n";	
-	$content .= "\$GLOBALS['old_time'] = '".$new_time."';\n";	
-	$content .= "?>";
-	$fichier = '../config/ip.php';
-
-	if (file_put_contents($fichier, $content) === FALSE) {
-		return FALSE;
-	} else {
-		return TRUE;
-	}
-}
-
-function get_literal_chmod($file) {
-	$perms = fileperms($file);
-	if (($perms & 0xC000) == 0xC000) {
-		$info = 's'; // Socket
-	} elseif (($perms & 0xA000) == 0xA000) {
-		$info = 'l'; // Lien symbolique
-	} elseif (($perms & 0x8000) == 0x8000) {
-		$info = '-'; // Régulier
-	} elseif (($perms & 0x6000) == 0x6000) {
-		$info = 'b'; // Block special
-	} elseif (($perms & 0x4000) == 0x4000) {
-		$info = 'd'; // Dossier
-	} elseif (($perms & 0x2000) == 0x2000) {
-		$info = 'c'; // Caractère spécial
-	} elseif (($perms & 0x1000) == 0x1000) {
-		$info = 'p'; // pipe FIFO
-	} else {
-		$info = 'u'; // Inconnu
-	}
-	// Autres
-	$info .= (($perms & 0x0100) ? 'r' : '-');
-	$info .= (($perms & 0x0080) ? 'w' : '-');
-	$info .= (($perms & 0x0040) ? (($perms & 0x0800) ? 's' : 'x' ) : (($perms & 0x0800) ? 'S' : '-'));
-	// Groupe
-	$info .= (($perms & 0x0020) ? 'r' : '-');
-	$info .= (($perms & 0x0010) ? 'w' : '-');
-	$info .= (($perms & 0x0008) ? (($perms & 0x0400) ? 's' : 'x' ) : (($perms & 0x0400) ? 'S' : '-'));
-	// Tout le monde
-	$info .= (($perms & 0x0004) ? 'r' : '-');
-	$info .= (($perms & 0x0002) ? 'w' : '-');
-	$info .= (($perms & 0x0001) ? (($perms & 0x0200) ? 't' : 'x' ) : (($perms & 0x0200) ? 'T' : '-'));
-
-	return $info;
 }
 
 
@@ -369,11 +318,11 @@ function request_external_files($feeds, $timeout, $echo_progress=false) {
 
 
 function rafraichir_cache() {
-	creer_dossier($GLOBALS['BT_ROOT_PATH'].$GLOBALS['dossier_cache'], 1);
+	creer_dossier(BT_ROOT.DIR_CACHE, 1);
 	$arr_a = liste_elements("SELECT * FROM articles WHERE bt_statut = 1 ORDER BY bt_date DESC LIMIT 0, 20", array(), 'articles');
 	$arr_c = liste_elements("SELECT * FROM commentaires WHERE bt_statut = 1 ORDER BY bt_id DESC LIMIT 0, 20", array(), 'commentaires');
 	$arr_l = liste_elements("SELECT * FROM links WHERE bt_statut = 1 ORDER BY bt_id DESC LIMIT 0, 20", array(), 'links');
-	$file = $GLOBALS['BT_ROOT_PATH'].$GLOBALS['dossier_cache'].'/'.'cache_rss_array.dat';
+	$file = BT_ROOT.DIR_CACHE.'/'.'cache_rss_array.dat';
 	return file_put_contents($file, '<?php /* '.chunk_split(base64_encode(serialize(array('c' => $arr_c, 'a' => $arr_a, 'l' => $arr_l)))).' */');
 }
 
@@ -423,7 +372,7 @@ function refresh_rss($feeds) {
 	}
 
 	// save last success time in the feed list
-	file_put_contents($GLOBALS['fichier_liste_fluxrss'], '<?php /* '.chunk_split(base64_encode(serialize($GLOBALS['liste_flux']))).' */');
+	file_put_contents(FEEDS_DB, '<?php /* '.chunk_split(base64_encode(serialize($GLOBALS['liste_flux']))).' */');
 	return $count_new;
 }
 

@@ -14,28 +14,27 @@
 header('Content-Type: application/rss+xml; charset=UTF-8');
 $xml = "<?".'xml version="1.0" encoding="UTF-8"'."?>"."\n";
 
-$GLOBALS['BT_ROOT_PATH'] = '';
+define('BT_ROOT', './');
+
 error_reporting(-1);
 $begin = microtime(TRUE);
 
-$GLOBALS['dossier_cache'] = 'cache';
-
-require_once 'config/user.php';
 require_once 'config/prefs.php';
 date_default_timezone_set($GLOBALS['fuseau_horaire']);
 
 function require_all() {
 	require_once 'inc/lang.php';
-	require_once 'inc/conf.php';
 	require_once 'inc/fich.php';
+	require_once 'inc/util.php';
+	require_once 'inc/conf.php';
 	require_once 'inc/html.php';
 	require_once 'inc/form.php';
 	require_once 'inc/comm.php';
 	require_once 'inc/conv.php';
-	require_once 'inc/util.php';
 	require_once 'inc/veri.php';
 	require_once 'inc/sqli.php';
 }
+
 
 $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">'."\n";
 $xml .= '<channel>'."\n";
@@ -45,7 +44,7 @@ $xml .= '<atom:link href="'.$GLOBALS['racine'].'rss.php'.((!empty($_SERVER['QUER
 /* si y'a un ID en paramètre : rss sur fil commentaires de l'article "ID" */
 if (isset($_GET['id']) and preg_match('#^[0-9]{14}$#', $_GET['id'])) {
 	require_all();
-	$GLOBALS['db_handle'] = open_base($GLOBALS['db_location']);
+	$GLOBALS['db_handle'] = open_base();
 	$article_id = htmlspecialchars($_GET['id']);
 
 	$liste = liste_elements("SELECT * FROM commentaires WHERE bt_article_id=? AND bt_statut=1 ORDER BY bt_id DESC", array($article_id), 'commentaires');
@@ -92,11 +91,11 @@ else {
 	}
 
 
-	$fcache = $GLOBALS['dossier_cache'].'/'.'cache_rss_array.dat';
+	$fcache = 'cache/cache_rss_array.dat';
 	$liste = array();
 	if ( !file_exists($fcache) or !is_array($liste = @unserialize(base64_decode(substr(file_get_contents($fcache), strlen('<?php /* '), -strlen(' */'))))) ) {
 		require_all();
-		$GLOBALS['db_handle'] = open_base($GLOBALS['db_location']);
+		$GLOBALS['db_handle'] = open_base();
 		rafraichir_cache();
 		if (file_exists($fcache)) { // file exists but reading it does not give an array: try again
 			$liste = unserialize(base64_decode(substr(file_get_contents($fcache), strlen('<?php /* '), -strlen(' */'))));

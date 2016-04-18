@@ -26,7 +26,7 @@ function js_drag_n_drop_handle($a) {
 // upload next file
 function uploadNext() {
 	if (list.length) {
-		document.getElementById(\'count\').classList.add(\'showed\');
+		document.getElementById(\'count\').classList.add(\'spinning\');
 		var nextFile = list.shift();
 		if (nextFile.size >= '.$max_file_size.') {
 			var respdiv = document.getElementById(nextFile.locId);
@@ -40,7 +40,7 @@ function uploadNext() {
 			uploadFile(nextFile);
 		}
 	} else {
-		document.getElementById(\'count\').classList.remove(\'showed\');
+		document.getElementById(\'count\').classList.remove(\'spinning\');
 		nbDraged = false;
 		// reactivate the "required" attribute of file input
 		document.getElementById(\'fichier\').required = true;
@@ -235,7 +235,7 @@ $sc = '
 function suppr_comm(button) {
 	var notifDiv = document.createElement(\'div\');
 	var reponse = window.confirm(\''.$GLOBALS['lang']['question_suppr_comment'].'\');
-	var div_bloc = document.getElementById(button.parentNode.parentNode.parentNode.parentNode.id);
+	var div_bloc = button.parentNode.parentNode.parentNode.parentNode.parentNode;
 
 	if (reponse == true) {
 		div_bloc.classList.add(\'ajaxloading\');
@@ -301,7 +301,7 @@ $sc = '
 
 function activate_comm(button) {
 	var notifDiv = document.createElement(\'div\');
-	var div_bloc = document.getElementById(button.parentNode.parentNode.parentNode.parentNode.id);
+	var div_bloc = button.parentNode.parentNode.parentNode.parentNode.parentNode;
 	div_bloc.classList.toggle(\'ajaxloading\');
 
 	var xhr = new XMLHttpRequest();

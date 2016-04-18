@@ -11,22 +11,22 @@
 #
 # *** LICENSE ***
 
-$GLOBALS['BT_ROOT_PATH'] = '../';
+define('BT_ROOT', '../');
+
 require_once '../inc/inc.php';
-error_reporting($GLOBALS['show_errors']);
 
 operate_session();
 $begin = microtime(TRUE);
 
-$GLOBALS['db_handle'] = open_base($GLOBALS['db_location']);
-$GLOBALS['liste_flux'] = open_serialzd_file($GLOBALS['fichier_liste_fluxrss']);
+$GLOBALS['db_handle'] = open_base();
+$GLOBALS['liste_flux'] = open_serialzd_file(FEEDS_DB);
 
 //foreach ($GLOBALS['liste_flux'] as $url => $arr) {
 //	$GLOBALS['liste_flux'][$url]['time'] -= 80000;
 //	$GLOBALS['liste_flux'][$url]['checksum'] = '42';
 //	$GLOBALS['liste_flux'][$url]['iserror'] = 1;
 //}
-//file_put_contents($GLOBALS['fichier_liste_fluxrss'], '<?php /* '.chunk_split(base64_encode(serialize($GLOBALS['liste_flux']))).' */');
+//file_put_contents(FEEDS_DB, '<?php /* '.chunk_split(base64_encode(serialize($GLOBALS['liste_flux']))).' */');
 //debug($GLOBALS['liste_flux']);
 
 // TRAITEMENT
@@ -149,14 +149,17 @@ else {
 				sendMarkReadRequest(\'postlist\', JSON.stringify(readQueue.urlList), false);
 				readQueue.urlList = [];
 				readQueue.count = 0;
-//				(e || window.event).returnValue = \'Sync?\' || \'\';
-//				return \'Sync?\';
 			}
 			else { return true; }
 		});'."\n";
 
 	echo 'var scrollPos = 0;'."\n";
 	echo 'window.addEventListener(\'scroll\', function(){ scrollingFabHideShow() });'."\n";
+
+	echo 'var list = document.querySelectorAll("a[data-feed-domain]");'."\n";
+	echo 'for (var i = 0, len=list.length; i < len; i++) {'."\n";
+	echo '	list[i].style.backgroundImage="url(\'" + "cache/favicons/get.php?g="+ list[i].getAttribute(\'data-feed-domain\') + "\')";'."\n";
+	echo '}'."\n";
 
 	echo ''."\n";
 	echo js_rss_add_feed(0);

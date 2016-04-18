@@ -19,7 +19,7 @@ function afficher_html_head($titre) {
 	$html .= "\t".'<meta charset="UTF-8" />'."\n";
 	$html .= "\t".'<link type="text/css" rel="stylesheet" href="style/style.css.php" />'."\n";
 	$html .= "\t".'<meta name="viewport" content="initial-scale=1.0, user-scalable=yes" />'."\n";
-	$html .= "\t".'<title>'.$titre.' | '.$GLOBALS['nom_application'].'</title>'."\n";
+	$html .= "\t".'<title>'.$titre.' | '.BLOGOTEXT_NAME.'</title>'."\n";
 	$html .= '</head>'."\n";
 	$html .= '<body id="body">'."\n\n";
 	echo $html;
@@ -29,12 +29,12 @@ function footer($begin_time='') {
 	$msg = '';
 	if ($begin_time != '') {
 		$dt = round((microtime(TRUE) - $begin_time),6);
-		$msg = ' - '.$GLOBALS['lang']['rendered'].' '.$dt.' s '.$GLOBALS['lang']['using'].' '.$GLOBALS['sgdb'];
+		$msg = ' - '.$GLOBALS['lang']['rendered'].' '.$dt.' s '.$GLOBALS['lang']['using'].' '.DBMS;
 	}
 
 	$html = '</div>'."\n";
 	$html .= '</div>'."\n";
-	$html .= '<p id="footer"><a href="'.$GLOBALS['appsite'].'">'.$GLOBALS['nom_application'].' '.$GLOBALS['version'].'</a>'.$msg.'</p>'."\n";
+	$html .= '<p id="footer"><a href="'.BLOGOTEXT_SITE.'">'.BLOGOTEXT_NAME.' '.BLOGOTEXT_VERSION.'</a>'.$msg.'</p>'."\n";
 	$html .= '</body>'."\n";
 	$html .= '</html>'."\n";
 	echo $html;
@@ -43,7 +43,7 @@ function footer($begin_time='') {
 /// menu haut panneau admin /////////
 function afficher_topnav($titre) {
 	$tab = pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_BASENAME);
-	if (strlen($titre) == 0) $titre = $GLOBALS['nom_application'];
+	if (strlen($titre) == 0) $titre = BLOGOTEXT_NAME;
 	$html = '';
 	$html .= '<div id="nav">'."\n";
 	$html .=  "\t".'<ul>'."\n";
@@ -266,8 +266,8 @@ function feed_list_html() {
 		$total_unread += $feed['nbrun'];
 	}
 
-	// First item : button with all feeds
-	$html = "\t\t".'<li class="all-feeds"><button type="button" onclick="document.getElementById(\'markasread\').onclick=function(){sendMarkReadRequest(\'all\',\'\', true);}; return sortAll();">'.$GLOBALS['lang']['rss_label_all_feeds'].' <span id="global-post-counter" data-nbrun="'.$total_unread.'">('.$total_unread.')</span></button></li>'."\n";
+	// First item : link all feeds
+	$html = "\t\t".'<li class="all-feeds"><a href="#" onclick="document.getElementById(\'markasread\').onclick=function(){sendMarkReadRequest(\'all\',\'\', true);}; return sortAll();">'.$GLOBALS['lang']['rss_label_all_feeds'].' <span id="global-post-counter" data-nbrun="'.$total_unread.'">('.$total_unread.')</span></a></li>'."\n";
 
 	$feed_urls = array();
 	foreach ($feeds_nb as $i => $feed) {
@@ -290,7 +290,7 @@ function feed_list_html() {
 		foreach ($folder as $j => $feed) {
 			$js = 'onclick="document.getElementById(\'markasread\').onclick=function(){sendMarkReadRequest(\'site\', \''.$feed['link'].'\', true);}; sortSite(this);"';
 				$li_html .= "\t\t".'<li class="" data-nbrun="'.$feed['nbrun'].'" data-feedurl="'.$feed['link'].'" title="'.$feed['link'].'">';
-				$li_html .= '<button type="button" '.(($feed['iserror'] > 2) ? 'class="feed-error" ': ' ' ).$js.'>'.$feed['title'].'</button>';
+				$li_html .= '<a href="#" '.(($feed['iserror'] > 2) ? 'class="feed-error" ': ' ' ).$js.' data-feed-domain="'.parse_url($feed['link'], PHP_URL_HOST).'">'.$feed['title'].'</a>';
 				$li_html .= '<span>('.$feed['nbrun'].')</span>';
 				$li_html .= '</li>'."\n";
 				$folder_count += $feed['nbrun'];
@@ -299,8 +299,8 @@ function feed_list_html() {
 		if ($i != '') {
 			$html .= "\t\t".'<li class="feed-folder" data-nbrun="'.$folder_count.'" data-folder="'.$i.'">'."\n";
 			$html .= "\t\t\t".'<span class="feed-folder-title">'."\n";
-			$html .= "\t\t\t\t".'<button type="button" onclick="document.getElementById(\'markasread\').onclick=function(){sendMarkReadRequest(\'folder\', \''.$i.'\', true);}; sortFolder(this);">'.$i.'<span>('.$folder_count.')</span></button>'."\n";
-			$html .= "\t\t\t\t".'<button type="button" onclick="return hideFolder(this)" class="unfold">unfold</button>'."\n";
+			$html .= "\t\t\t\t".'<a href="#" onclick="document.getElementById(\'markasread\').onclick=function(){sendMarkReadRequest(\'folder\', \''.$i.'\', true);}; sortFolder(this);">'.$i.'<span>('.$folder_count.')</span></a>'."\n";
+			$html .= "\t\t\t\t".'<a href="#" onclick="return hideFolder(this)" class="unfold">unfold</a>'."\n";
 			$html .= "\t\t\t".'</span>'."\n";
 			$html .= "\t\t\t".'<ul>'."\n\t\t";
 		}

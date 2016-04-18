@@ -11,14 +11,14 @@
 #
 # *** LICENSE ***
 
-$GLOBALS['BT_ROOT_PATH'] = '../';
+define('BT_ROOT', '../');
+
 require_once '../inc/inc.php';
-error_reporting($GLOBALS['show_errors']);
 
 operate_session();
 $begin = microtime(TRUE);
 
-$GLOBALS['db_handle'] = open_base($GLOBALS['db_location']);
+$GLOBALS['db_handle'] = open_base();
 $step = 0;
 
 // modèle d'affichage d'un div pour un lien (avec un formaulaire d'édition par lien).
@@ -82,7 +82,7 @@ if (isset($_POST['_verif_envoi'])) {
 				$fichier = init_post_fichier();
 				$erreurs = valider_form_fichier($fichier);
 
-				$GLOBALS['liste_fichiers'] = open_serialzd_file($GLOBALS['fichier_liste_fichiers']);
+				$GLOBALS['liste_fichiers'] = open_serialzd_file(FILES_DB);
 				bdd_fichier($fichier, 'ajout-nouveau', 'download', $link['bt_link']);
 			}
 		}
@@ -112,7 +112,7 @@ if (!isset($_GET['url']) and !isset($_GET['ajout'])) {
 			$query = "SELECT * FROM links WHERE bt_author=? ORDER BY bt_id DESC";
 			$tableau = liste_elements($query, array($search), 'links');
 		} else {
-			$query = "SELECT * FROM links ORDER BY bt_id DESC LIMIT 0, ".$GLOBALS['max_linx_admin'];
+			$query = "SELECT * FROM links ORDER BY bt_id DESC LIMIT ".$GLOBALS['max_linx_admin'];
 			$tableau = liste_elements($query, array(), 'links');
 		}
 	} elseif (!empty($_GET['q'])) { // mot clé
@@ -124,7 +124,7 @@ if (!isset($_GET['url']) and !isset($_GET['ajout'])) {
 		$query = "SELECT * FROM links WHERE bt_id=?";
 		$tableau = liste_elements($query, array($_GET['id']), 'links');
 	} else { // aucun filtre : affiche TOUT
-		$query = "SELECT * FROM links ORDER BY bt_id DESC LIMIT 0, ".$GLOBALS['max_linx_admin'];
+		$query = "SELECT * FROM links ORDER BY bt_id DESC LIMIT ".$GLOBALS['max_linx_admin'];
 		$tableau = liste_elements($query, array(), 'links');
 	}
 }
@@ -168,8 +168,8 @@ elseif ($step == 2) { // lien donné dans l’URL
 	echo afficher_form_link($step, $erreurs_form);
 }
 else { // aucun lien à ajouter ou éditer : champ nouveau lien + listage des liens en dessus.
-	echo afficher_form_link(1, $erreurs_form);
 	echo '<div id="list-link">'."\n";
+	echo afficher_form_link(1, $erreurs_form);
 	foreach ($tableau as $link) {
 		afficher_lien($link);
 	}
